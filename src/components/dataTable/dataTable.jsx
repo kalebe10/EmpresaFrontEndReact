@@ -18,6 +18,7 @@ export default function DataTable({
   onChangeLookup,
   order,
   setOrder,
+  dataOld,
 }) {
   const { http } = useContext(GlobalContext);
   function onVoltar() {
@@ -40,7 +41,7 @@ export default function DataTable({
       order: 1,
     };
     if (order.columns == column) {
-      set_order.order = (order.order) * -1;
+      set_order.order = order.order * -1;
     }
     setOrder(set_order);
   }
@@ -65,9 +66,9 @@ export default function DataTable({
                       >
                         {el.headerName}
                         {order.columns == el.field &&
-                          (order.order == -1 ?(
+                          (order.order == -1 ? (
                             <AiOutlineArrowUp />
-                            ) : (
+                          ) : (
                             <AiOutlineArrowDown />
                           ))}
                       </th>
@@ -89,27 +90,30 @@ export default function DataTable({
             </Table>
           )}
           <Form className="w-100">
-            <Row className="d-flex">
-              {page > 1 && (
-                <Col md={1}>
-                  <Button onClick={onVoltar} size="sm">
-                    Voltar
-                  </Button>
-                </Col>
-              )}
-              <Col md={2}>
-                <span>
-                  Pagina {page} de {pages}
-                </span>
-              </Col>
-              {page < pages && (
+            {dataOld.length == 0 && (
+              <Row className="d-flex">
+                {page > 1 && (
+                  <Col md={1}>
+                    <Button onClick={onVoltar} size="sm">
+                      Voltar
+                    </Button>
+                  </Col>
+                )}
                 <Col md={2}>
-                  <Button onClick={onAvancar} size="sm">
-                    Avançar
-                  </Button>
+                  <span>
+                    Pagina {page} de {pages}
+                  </span>
                 </Col>
-              )}
-            </Row>
+                {page < pages && (
+                  <Col md={2}>
+                    <Button onClick={onAvancar} size="sm">
+                      Avançar
+                    </Button>
+                  </Col>
+                )}
+              </Row>
+            )}
+
             <Row className="d-flex ">
               <Col md={3} className="pe-0">
                 <Form.Select

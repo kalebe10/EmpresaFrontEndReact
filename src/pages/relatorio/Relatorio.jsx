@@ -22,11 +22,12 @@ const map_text = {
 export default function Relatorio() {
   const { get, post } = useContext(HttpContext);
   const [data, setData] = useState([]);
+  const [dataOld, setDataOld] = useState([]);
   const [pages, setPages] = useState(0);
   const [page, setPage] = useState(1);
   const [order, setOrder] = useState({ columns: "id", order: 1 });
   const [inputSearch, setInputSearch] = useState({
-    columnSearch: "nome_fantasia",
+    columnSearch: "nome_razao",
     valueSearch: "",
   });
   const columns = [
@@ -120,15 +121,34 @@ export default function Relatorio() {
     ordenation();
   }, [order.order]);
 
-  async function searchLookup(data) {
-    const res = await post("api/lookup/filter?limit=100", data);
+  async function aplicarFiltro(payload) {
+    if (dataOld.length == 0) {
+      setDataOld(data);
+    }
+    const valueSearch = inputSearch.valueSearch.toLowerCase();
+    const dadosFilter = data.filter((empresa) => {
+      const empresaValue = empresa[inputSearch.columnSearch].toLowerCase();
+      return empresaValue.includes(valueSearch);
+    });
+    if (dadosFilter.length > 0) {
+      setData(dadosFilter);
+    } else {
+      await searchLookup(payload);
+    }
+  }
+
+  async function searchLookup(payload) {
+    const res = await post("api/lookup/filter?limit=100", payload);
     if (res) {
       setData(res);
     }
   }
   useEffect(() => {
     if (inputSearch.valueSearch.length > 0) {
-      searchLookup({ [inputSearch.columnSearch]: inputSearch.valueSearch });
+      aplicarFiltro({ [inputSearch.columnSearch]: inputSearch.valueSearch });
+    } else if (dataOld.length > 0) {
+      setData(dataOld);
+      setDataOld([]);
     }
   }, [inputSearch.valueSearch]);
 
@@ -145,6 +165,7 @@ export default function Relatorio() {
         onChangeLookup={onChangeLookup}
         order={order}
         setOrder={setOrder}
+        dataOld={dataOld}
       />
     </div>
   );
