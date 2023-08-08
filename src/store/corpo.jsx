@@ -5,8 +5,8 @@ import * as Pages from "../pages/pages";
 export const CorpoContext = createContext();
 const CorpoProvider = ({ children }) => {
   const initialState = {
-    component: <Pages.Relatorio />,
-    // component: <Pages.Dashboard />,
+    // component: <Pages.Relatorio />,
+    component: <Pages.Dashboard />,
   };
   const [corpo, setCorpo] = useState(initialState);
 
